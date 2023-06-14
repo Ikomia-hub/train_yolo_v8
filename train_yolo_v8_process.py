@@ -90,7 +90,7 @@ class TrainYoloV8(dnntrain.TrainProcess):
 
         self.device = torch.device("cpu")
         self.model_name_file = None
-        self.enable_tensorboard(False)
+        self.enable_tensorboard(True)
         self.model = None
         self.stop_training = False
 
