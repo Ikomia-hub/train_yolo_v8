@@ -132,9 +132,7 @@ class TrainYoloV8(dnntrain.TrainProcess):
             # Download model if not exist
             if not os.path.isfile(self.model_weights):
                 url = f'https://github.com/{self.repo}/releases/download/{self.version}/{param.cfg["model_name"]}.pt'
-                print("Downloading model weights...")
                 download(url=url, dir=model_folder, unzip=True)
-        print("MOOODEEEEEEEEL_WEEEEEEEEEEEEEEEEEIGHTS", self.model_weights)
         self.model = YOLO(self.model_weights)
 
         # Add custom MLflow callback to the model
