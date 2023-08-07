@@ -1,16 +1,20 @@
 import logging
-from ikomia.core import task
 from ikomia.utils.tests import run_for_test
-
+import os
 
 logger = logging.getLogger(__name__)
 
 
 def test(t, data_dict):
-    logger.info(f"===== Test::{t.name} =====")
-    # 1. Set task parameter if necessary. ex: task.set_parameters(t, {"iteration": 10, "size":3})
-    # 2. Get input data from data_dict. ex: img = cv2.imread(data_dict["images"]["detection"]["coco"])[::-1]
-    # 3. For each input to set
-    #   3.1 Get task input instance. ex: input_0 = t.getInput(0)
-    #   3.2 Set input data. ex: input_0.setImage(img)
-    return run_for_test(t)
+    logger.info("===== Test::train yolo v8 =====")
+    input_dataset = t.get_input(0)
+    params = t.get_parameters()
+    dataset_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "images")
+    os.makedirs(dataset_folder, exist_ok=True)
+    params["epochs"] = "2"
+    params["batch_size"] = "1"
+    params["dataset_folder"] = dataset_folder
+    params["dataset_split_ratio"] = "0.5"
+    t.set_parameters(params)
+    input_dataset.load(data_dict["datasets"]["detection"]["dataset_coco"])
+    yield run_for_test(t)
