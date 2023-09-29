@@ -211,6 +211,8 @@ class TrainYoloV8Factory(dataprocess.CTaskFactory):
         self.info.original_repository = "https://github.com/ultralytics/ultralytics"
         # Keywords used for search
         self.info.keywords = "YOLO, object, detection, ultralytics, real-time"
+        self.info.algo_type = core.AlgoType.TRAIN
+        self.info.algo_tasks = "OBJECT_DETECTION"
 
     def create(self, param=None):
         # Create process object
