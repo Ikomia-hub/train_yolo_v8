@@ -27,7 +27,10 @@ from ultralytics import YOLO
 from datetime import datetime
 import torch
 from train_yolo_v8.utils import custom_callbacks
-from ultralytics import download
+from ultralytics import download, settings
+
+# Update a setting
+settings.update({'mlflow': False})
 
 # --------------------
 # - Class to handle the process parameters
@@ -169,6 +172,9 @@ class TrainYoloV8(dnntrain.TrainProcess):
                 project=output_folder,
             )
 
+        # Reset settings to default values
+        settings.reset()
+
         # Step progress bar (Ikomia Studio):
         self.emit_step_progress()
 
@@ -197,7 +203,7 @@ class TrainYoloV8Factory(dataprocess.CTaskFactory):
         self.info.short_description = "Train YOLOv8 object detection models."
         # relative path -> as displayed in Ikomia application process tree
         self.info.path = "Plugins/Python/Detection"
-        self.info.version = "2.0.2"
+        self.info.version = "2.1.2"
         self.info.icon_path = "icons/icon.png"
         self.info.authors = "Jocher, G., Chaurasia, A., & Qiu, J"
         self.info.article = "YOLO by Ultralytics"
