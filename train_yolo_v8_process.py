@@ -113,8 +113,7 @@ class TrainYoloV8(dnntrain.TrainProcess):
 
         # Conversion from Ikomia dataset to YoloV8 dataset
         print("Preparing dataset...")
-        dataset_yaml = prepare_dataset(dataset_input, param.cfg["dataset_folder"],
-                                       param.cfg["dataset_split_ratio"])
+        dataset_yaml = prepare_dataset(dataset_input, param.cfg["dataset_folder"], param.cfg["dataset_split_ratio"])
 
         # Call begin_task_run() for initialization
         self.begin_task_run()
@@ -125,17 +124,17 @@ class TrainYoloV8(dnntrain.TrainProcess):
             # Load the YAML config file
             with open(param.cfg["config_file"], 'r') as file:
                 config_file = yaml.safe_load(file)
+
             self.model_weights = config_file["model"]
         else:
             # Set path
-            model_folder = os.path.join(os.path.dirname(
-                os.path.realpath(__file__)), "weights")
-            self.model_weights = os.path.join(
-                str(model_folder), f'{param.cfg["model_name"]}.pt')
+            model_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "weights")
+            self.model_weights = os.path.join(str(model_folder), f'{param.cfg["model_name"]}.pt')
             # Download model if not exist
             if not os.path.isfile(self.model_weights):
                 url = f'https://github.com/{self.repo}/releases/download/{self.version}/{param.cfg["model_name"]}.pt'
                 download(url=url, dir=model_folder, unzip=True)
+
         self.model = YOLO(self.model_weights)
 
         # Add custom MLflow callback to the model
@@ -151,10 +150,11 @@ class TrainYoloV8(dnntrain.TrainProcess):
 
         # Train the model
         if param.cfg["config_file"]:
+            config_file["data"] = dataset_yaml
+            config_file["project"] = output_folder
             # Extract the custom argument-value pairs
             custom_args = {k: v for k, v in config_file.items()}
             self.model.train(**custom_args)
-
         else:
             self.model.train(
                 data=dataset_yaml,
@@ -203,7 +203,7 @@ class TrainYoloV8Factory(dataprocess.CTaskFactory):
         self.info.short_description = "Train YOLOv8 object detection models."
         # relative path -> as displayed in Ikomia application process tree
         self.info.path = "Plugins/Python/Detection"
-        self.info.version = "2.1.1"
+        self.info.version = "2.1.2"
         self.info.icon_path = "icons/icon.png"
         self.info.authors = "Jocher, G., Chaurasia, A., & Qiu, J"
         self.info.article = "YOLO by Ultralytics"
