@@ -15,36 +15,37 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import copy
+import os
+import yaml
+from datetime import datetime
+
+import torch
+
 from ikomia import core, dataprocess
 from ikomia.core.task import TaskParam
 from ikomia.dnn import dnntrain
-from train_yolo_v8.utils.ikutils import prepare_dataset
-import os
-import yaml
+
 from ultralytics import YOLO
-from datetime import datetime
-import torch
-from train_yolo_v8.utils import custom_callbacks
 from ultralytics import download, settings
+
+from train_yolo_v8.utils.ikutils import prepare_dataset
+from train_yolo_v8.utils import custom_callbacks
+
 
 # Update a setting
 settings.update({'mlflow': False})
+
 
 # --------------------
 # - Class to handle the process parameters
 # - Inherits PyCore.CWorkflowTaskParam from Ikomia API
 # --------------------
-
-
 class TrainYoloV8Param(TaskParam):
 
     def __init__(self):
         TaskParam.__init__(self)
-
-        dataset_folder = os.path.join(os.path.dirname(
-            os.path.realpath(__file__)), "dataset")
+        dataset_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "dataset")
         self.cfg["dataset_folder"] = dataset_folder
         self.cfg["model_name"] = "yolov8m"
         self.cfg["epochs"] = 100
@@ -58,8 +59,7 @@ class TrainYoloV8Param(TaskParam):
         self.cfg["lr0"] = 0.01
         self.cfg["lrf"] = 0.01
         self.cfg["config_file"] = ""
-        self.cfg["output_folder"] = os.path.dirname(
-            os.path.realpath(__file__)) + "/runs/"
+        self.cfg["output_folder"] = f"{os.path.dirname(os.path.realpath(__file__))}/runs/"
 
     def set_values(self, param_map):
         self.cfg["dataset_folder"] = str(param_map["dataset_folder"])
@@ -74,8 +74,7 @@ class TrainYoloV8Param(TaskParam):
         self.cfg["lr0"] = float(param_map["lr0"])
         self.cfg["lrf"] = float(param_map["lrf"])
         self.cfg["config_file"] = param_map["config_file"]
-        self.cfg["dataset_split_ratio"] = float(
-            param_map["dataset_split_ratio"])
+        self.cfg["dataset_split_ratio"] = float(param_map["dataset_split_ratio"])
         self.cfg["output_folder"] = str(param_map["output_folder"])
 
 
@@ -84,9 +83,9 @@ class TrainYoloV8Param(TaskParam):
 # - Inherits PyCore.CWorkflowTask or derived from Ikomia API
 # --------------------
 class TrainYoloV8(dnntrain.TrainProcess):
-
     def __init__(self, name, param):
         dnntrain.TrainProcess.__init__(self, name, param)
+
         # Create parameters class
         if param is None:
             self.set_param_object(TrainYoloV8Param())
@@ -192,8 +191,6 @@ class TrainYoloV8(dnntrain.TrainProcess):
 # - Factory class to build process object
 # - Inherits PyDataProcess.CTaskFactory from Ikomia API
 # --------------------
-
-
 class TrainYoloV8Factory(dataprocess.CTaskFactory):
 
     def __init__(self):
@@ -203,7 +200,8 @@ class TrainYoloV8Factory(dataprocess.CTaskFactory):
         self.info.short_description = "Train YOLOv8 object detection models."
         # relative path -> as displayed in Ikomia application process tree
         self.info.path = "Plugins/Python/Detection"
-        self.info.version = "2.1.2"
+        self.info.version = "2.2.0"
+        self.info.min_ikomia_version = "0.15.0"
         self.info.icon_path = "icons/icon.png"
         self.info.authors = "Jocher, G., Chaurasia, A., & Qiu, J"
         self.info.article = "YOLO by Ultralytics"
@@ -219,6 +217,10 @@ class TrainYoloV8Factory(dataprocess.CTaskFactory):
         self.info.keywords = "YOLO, object, detection, ultralytics, real-time"
         self.info.algo_type = core.AlgoType.TRAIN
         self.info.algo_tasks = "OBJECT_DETECTION"
+        self.info.hardware_config.min_cpu = 4
+        self.info.hardware_config.min_ram = 16
+        self.info.hardware_config.gpu_required = True
+        self.info.hardware_config.min_vram = 16
 
     def create(self, param=None):
         # Create process object
