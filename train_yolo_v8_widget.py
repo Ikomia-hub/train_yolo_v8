@@ -1,27 +1,10 @@
-# Copyright (C) 2021 Ikomia SAS
-# Contact: https://www.ikomia.com
-#
-# This file is part of the IkomiaStudio software.
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# PyQt GUI framework
+from PyQt6.QtWidgets import *
 
 from ikomia import core, dataprocess
 from ikomia.utils import pyqtutils, qtconversion
-from train_yolo_v8.train_yolo_v8_process import TrainYoloV8Param
 
-# PyQt GUI framework
-from PyQt5.QtWidgets import *
+from train_yolo_v8.train_yolo_v8_process import TrainYoloV8Param
 
 
 # --------------------
@@ -57,7 +40,7 @@ class TrainYoloV8Widget(core.CWorkflowTaskWidget):
             self.grid_layout, label="Dataset folder",
             path=self.parameters.cfg["dataset_folder"],
             tooltip="Select folder",
-            mode=QFileDialog.Directory
+            mode=QFileDialog.FileMode.Directory
         )
 
         # Epochs
@@ -88,7 +71,7 @@ class TrainYoloV8Widget(core.CWorkflowTaskWidget):
         self.label_hyp = QLabel("Hyper-parameters file")
         self.browse_hyp_file = pyqtutils.BrowseFileWidget(path=self.parameters.cfg["config_file"],
                                                           tooltip="Select file",
-                                                          mode=QFileDialog.ExistingFile)
+                                                          mode=QFileDialog.FileMode.ExistingFile)
 
         row = self.grid_layout.rowCount()
         self.grid_layout.addWidget(self.label_hyp, row, 0)
@@ -102,7 +85,7 @@ class TrainYoloV8Widget(core.CWorkflowTaskWidget):
             self.grid_layout, label="Output folder",
             path=self.parameters.cfg["output_folder"],
             tooltip="Select folder",
-            mode=QFileDialog.Directory
+            mode=QFileDialog.FileMode.Directory
         )
 
         # PyQt -> Qt wrapping
